@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * An implementation of the Translator interface which reads in the translation
@@ -17,10 +18,11 @@ import org.json.JSONArray;
  */
 public class JSONTranslator implements Translator {
 
-    private Map<String, Map<String, String>> tToJ;
+    private Map<String, Map<String, String>> tToJ = new HashMap<>();
     /**
      * Constructs a JSONTranslator using data from the sample.json resources file.
      */
+
     public JSONTranslator() {
         this("sample.json");
     }
@@ -31,16 +33,13 @@ public class JSONTranslator implements Translator {
      * @throws RuntimeException if the resource file can't be loaded properly
      */
     public JSONTranslator(String filename) {
-        tToJ = new HashMap<>();
         try {
-
             String jsonString = Files.readString(Paths.get(getClass().getClassLoader().getResource(filename).toURI()));
-
             JSONArray jsonArray = new JSONArray(jsonString);
+
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject countryObject = jsonArray.getJSONObject(i);
-                String alpha2Code = "alpha2".getString(countryObject);
-
+                String alpha3Code = countryObject.getString("alpha3");
                 Map<String, String> languageMap = new HashMap<>();
 
                 for (String key : countryObject.keySet()) {
@@ -49,7 +48,7 @@ public class JSONTranslator implements Translator {
                     }
                 }
 
-                tToJ.put(alpha2Code, languageMap);
+                tToJ.put(alpha3Code, languageMap);
             }
         }
 

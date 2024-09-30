@@ -1,6 +1,5 @@
 package org.translation;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -15,12 +14,12 @@ import java.util.Scanner;
  * - at any time, the user can type quit to quit the program<br/>
  */
 public class Main {
-
     /**
      * This is the main entry point of our Translation System!<br/>
      * A class implementing the Translator interface is created and passed into a call to runProgram.
      * @param args not used by the program
      */
+
     public static void main(String[] args) {
 
         Translator translator = new JSONTranslator(null);
@@ -36,19 +35,24 @@ public class Main {
      * @param translator the Translator implementation to use in the program
      */
     public static void runProgram(Translator translator) {
+        String quit = "quit";
+
         while (true) {
             String country = promptForCountry(translator);
-            String quit = "quit";
             if (quit.equals(country)) {
                 break;
             }
 
-            String language = promptForLanguage(translator, country);
-            if (quit.equals(language)) {
+            CountryCodeConverter converter = new CountryCodeConverter();
+            String x = converter.fromCountry(country);
+            String language = promptForLanguage(translator, x);
+            if (language.equals(quit)) {
                 break;
             }
 
-            String translation = translator.translate(country, language);
+            LanguageCodeConverter converter2 = new LanguageCodeConverter();
+            String y = converter2.fromLanguage(language);
+            String translation = translator.translate(country, y);
             if (translation != null) {
                 System.out.println(country + ": " + translation);
             }
@@ -72,10 +76,11 @@ public class Main {
         List<String> countries = translator.getCountries();
         Collections.sort(countries);
         System.out.println(countries);
-        System.out.println("select a country from above:");
         for (String country : countries) {
             System.out.println(country);
         }
+        System.out.println("select a country from above:");
+
         Scanner s = new Scanner(System.in);
         return s.nextLine();
 
